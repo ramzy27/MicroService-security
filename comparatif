@@ -1,0 +1,52 @@
+	1. Récap vs N*
+
+
+(impr écran bulk fish N documents , generate documents)
+
+Récap:Action faite une seule fois sur l'ensemble du lot
+
+N* untitaires:des actions unitaires lancées N* (nombre de deals séléctionnés)
+
+
+	2. LOT 0 
+Liste basique d'actions bulk ( email et génération de docs)
+Traitement sur tout le lot (pas de sélection)
+ Pas possible d'ouvrir les trade fils
+
+
+	A. Bulk workflow
+(impr écran poc cmmn)
+1.liste de taches vient du workflow "parent"
+2.Crèer des nouveaux BPMN pour changer les templates et les noms des taches auto
+3.Une fois l'execution requested lancée de camunda , il faut un handler spécifique pour gérer ces taches.
+Proposition(Appeler le service directement sans faire de commandes , si email , pas besoin de faire une boucle ,sinon boucler)
+4.Handler retourne exectionCompleted ou failure et on notifie la GUI.
+
+PROS:
++Facile à dévelpper
++Le cout c'est de rajouter des handlers et appeler directement les services.
+
+CONS:
+-ça casse l'architecture
+-pas évolutif ( pour la séléction , puis si on veut que les actions faites en bulk aient des impacts sur les process des trades, pour les actions disponibles)
+
+
+	B. Bulk workflow avec des process unitaires
+	Il faut crééer pour chaque trade splitté un nouveau workflow.
+	
+	Workflow de bulk qui contiendra les taches récap.
+	Workflow unitaire pour chaque trade.
+	
+1.liste des taches est calculé (un nouveau paramètre dans le workflow "bulkable" donc si tache bulkable et qu'elle est activée dans tous les process séléctionner ,alors l'afficher.+ taches du worflow "bulk)
+2.si c'est récap.on envoie completetask sinon completeBulkTasks (boucle)
+
+
+PROS:
++ça casse pas l'architecture
++pour le traitement des taches unitaires il y'a 0 devs à faire coté back .
++ça permet de supporter les améliotations prévues pour les les prochaines livraisons)
++la traitement de bulk impacte directement les process des deals(pas d'incohérence)
+
+CONS:
+-Notification dans la GUI compliqué.
+-
